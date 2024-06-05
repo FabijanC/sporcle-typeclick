@@ -2,7 +2,7 @@
     "manifest_version": 3,
     "name": "sporcle-typeclick",
     "version": "1.0",
-    "description": "Chrome extension which provides typing functionality on clickable Sporcle quizzes",
+    "description": "Enables typing on clickable Sporcle quizzes",
     "icons": {
         "16": "images/favicon.png",
         "32": "images/favicon.png"
@@ -16,7 +16,7 @@
                 "style.css"
             ],
             "matches": [
-                "https://sporcle.com/*"
+                "https://www.sporcle.com/*"
             ]
         }
     ]
