@@ -30,14 +30,18 @@ controlBox.style = "display: flex; justify-content: center;";
 const prevButton = document.getElementById("pickprev");
 const nextButton = document.getElementById("picknext");
 
-controlBox.insertAdjacentElement("afterbegin", prevButton);
+controlBox.insertAdjacentElement("beforeend", prevButton);
 
 const customInput = document.createElement("input");
 customInput.id = "typeclick-input";
 customInput.style = "margin: 0 5px;";
 
-controlBox.insertAdjacentElement("afterbegin", customInput);
-controlBox.insertAdjacentElement("afterbegin", nextButton);
+controlBox.insertAdjacentElement("beforeend", customInput);
+controlBox.insertAdjacentElement("beforeend", nextButton);
+
+prevButton.onclick = nextButton.onclick = () => {
+  customInput.focus();
+};
 
 customInput.addEventListener("keyup", function (event) {
   const currentInputValue = normalizeText(this.value);
