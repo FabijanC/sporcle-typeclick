@@ -1,34 +1,58 @@
+function normalizeText(text) {
+  return text.toLowerCase();
+}
+
+function isAnswerCorrect(answer) {
+  return (
+    answer.classList.contains("answer") && answer.classList.contains("right")
+  );
+}
+
 const playGameBox = document.getElementById("playGameBox");
 // TODO perhaps wrap input in a div
 const answers = document.getElementsByClassName("answer");
 
 const customInput = document.createElement("input");
 customInput.addEventListener("keyup", function (event) {
-  const currentInputValue = this.value.toLowerCase();
+  const currentInputValue = normalizeText(this.value);
 
   const filteredAnswers = [];
 
   for (const answer of answers) {
-    const answerText = answer.children[0].innerText.toLowerCase();
-    if (!answerText.startsWith(currentInputValue)) {
-      answer.style.display = "none";
-    } else {
-      // TODO add shading of matched text
+    const answerText = normalizeText(answer.children[0].innerText);
+    // TODO Instead of checking prefix, check substring to cover cases when e.g. player omits the leading "The"
+    if (answerText.startsWith(currentInputValue) && !isAnswerCorrect(answer)) {
+      // TODO Add highlighting of matched text
       answer.style.display = "block";
       filteredAnswers.push(answer);
+    } else {
+      answer.style.display = "none";
     }
   }
 
-  // TODO support not pressing enter if complete match
-  if (filteredAnswers.length === 1 && event.key === "Enter") {
-    const onlyAnswer = filteredAnswers[0];
-    // TODO don't do anything if answer already used
-    onlyAnswer.click();
-    if (onlyAnswer.className === "answer right") {
-      this.value = "";
+  if (event.key === "Enter") {
+    let selectedAnswer = undefined;
+    if (filteredAnswers.length === 1) {
+      selectedAnswer = filteredAnswers[0];
+    } else {
+      // if multiple same answers (this is possible), the last one is clicked
       for (const answer of answers) {
-        answer.style.display = "block";
+        if (currentInputValue === normalizeText(answer.children[0].innerText)) {
+          selectedAnswer = answer;
+        }
       }
+    }
+
+    if (selectedAnswer) {
+      selectedAnswer.click();
+      if (isAnswerCorrect(selectedAnswer)) {
+        this.value = "";
+        for (const answer of answers) {
+          answer.style.display = "block";
+        }
+      }
+
+      // Not excluding used answers because there are answer-reusable clickable quizzes
     }
   }
 });
