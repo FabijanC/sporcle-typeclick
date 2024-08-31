@@ -1,8 +1,12 @@
 function normalizeText(text) {
-  return text.toLowerCase();
+  return text
+    .toLowerCase()
+    .split("")
+    .filter((c) => /[A-Za-z0-9]/.test(c))
+    .join("");
 }
 
-function isAnswerCorrect(answer) {
+function isAnswerMarkedAsCorrect(answer) {
   return (
     answer.classList.contains("answer") && answer.classList.contains("right")
   );
@@ -16,13 +20,22 @@ const customInput = document.createElement("input");
 customInput.addEventListener("keyup", function (event) {
   const currentInputValue = normalizeText(this.value);
 
-  const filteredAnswers = [];
+  if (!currentInputValue) {
+    for (const answer of answers) {
+      answer.style.display = "block";
+    }
+    return;
+  }
 
+  const filteredAnswers = [];
   for (const answer of answers) {
     const answerText = normalizeText(answer.children[0].innerText);
-    // TODO Instead of checking prefix, check substring to cover cases when e.g. player omits the leading "The"
-    if (answerText.startsWith(currentInputValue) && !isAnswerCorrect(answer)) {
+    if (
+      answerText.indexOf(currentInputValue) !== -1 &&
+      !isAnswerMarkedAsCorrect(answer)
+    ) {
       // TODO Add highlighting of matched text
+      // Not displaying answers marked as correct to avoid confusion about what is selected with Enter
       answer.style.display = "block";
       filteredAnswers.push(answer);
     } else {
@@ -34,7 +47,7 @@ customInput.addEventListener("keyup", function (event) {
     let selectedAnswer = undefined;
     if (filteredAnswers.length === 1) {
       selectedAnswer = filteredAnswers[0];
-    } else {
+    } else if (filteredAnswers.length > 1) {
       // if multiple same answers (this is possible), the last one is clicked
       for (const answer of answers) {
         if (currentInputValue === normalizeText(answer.children[0].innerText)) {
@@ -45,7 +58,7 @@ customInput.addEventListener("keyup", function (event) {
 
     if (selectedAnswer) {
       selectedAnswer.click();
-      if (isAnswerCorrect(selectedAnswer)) {
+      if (isAnswerMarkedAsCorrect(selectedAnswer)) {
         this.value = "";
         for (const answer of answers) {
           answer.style.display = "block";
@@ -62,7 +75,7 @@ const playButton = document.getElementById("button-play");
 playButton.addEventListener("click", () => {
   const quizDetails = document.getElementById("quiz-details");
   const isClickable = Array.from(quizDetails.querySelectorAll("span")).find(
-    (el) => el.textContent.toLowerCase().indexOf("clickable") != -1
+    (el) => el.textContent.toLowerCase().indexOf("clickable") !== -1
   );
 
   if (!isClickable) {
