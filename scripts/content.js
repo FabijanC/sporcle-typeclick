@@ -6,24 +6,44 @@ function normalizeText(text) {
     .join("");
 }
 
-function isAnswerMarkedAsCorrect(answer) {
-  return (
-    answer.classList.contains("answer") && answer.classList.contains("right")
-  );
+function isAnswerMarkedAsCorrect(el) {
+  return el.classList.contains("answer") && el.classList.contains("right");
 }
 
+function displayAll(elements) {
+  for (const el of elements) {
+    el.style.display = "block";
+  }
+}
+
+// Define custom buttons and inputs.
+// Sporcle's script prevents default mousedown behavior on elements in questionbox,
+// so we define a new element that will hold the new input,
+// and move the Prev and Next buttons inside it for easier tab navigation
 const playGameBox = document.getElementById("playGameBox");
-// TODO perhaps wrap input in a div
 const answers = document.getElementsByClassName("answer");
 
+const controlBox = document.createElement("div");
+controlBox.id = "controlbox";
+controlBox.style = "display: flex; justify-content: center;";
+
+const prevButton = document.getElementById("pickprev");
+const nextButton = document.getElementById("picknext");
+
+controlBox.insertAdjacentElement("afterbegin", prevButton);
+
 const customInput = document.createElement("input");
+customInput.id = "typeclick-input";
+customInput.style = "margin: 0 5px;";
+
+controlBox.insertAdjacentElement("afterbegin", customInput);
+controlBox.insertAdjacentElement("afterbegin", nextButton);
+
 customInput.addEventListener("keyup", function (event) {
   const currentInputValue = normalizeText(this.value);
 
   if (!currentInputValue) {
-    for (const answer of answers) {
-      answer.style.display = "block";
-    }
+    displayAll(answers);
     return;
   }
 
@@ -35,13 +55,14 @@ customInput.addEventListener("keyup", function (event) {
       !isAnswerMarkedAsCorrect(answer)
     ) {
       // TODO Add highlighting of matched text
-      // Not displaying answers marked as correct to avoid confusion about what is selected with Enter
-      answer.style.display = "block";
       filteredAnswers.push(answer);
     } else {
       answer.style.display = "none";
     }
   }
+
+  // Not displaying answers marked as correct to avoid confusion about what is selected with Enter
+  displayAll(filteredAnswers);
 
   if (event.key === "Enter") {
     let selectedAnswer = undefined;
@@ -60,12 +81,9 @@ customInput.addEventListener("keyup", function (event) {
       selectedAnswer.click();
       if (isAnswerMarkedAsCorrect(selectedAnswer)) {
         this.value = "";
-        for (const answer of answers) {
-          answer.style.display = "block";
-        }
+        // Not excluding used answers because there are answer-reusable clickable quizzes
+        displayAll(answers);
       }
-
-      // Not excluding used answers because there are answer-reusable clickable quizzes
     }
   }
 });
@@ -83,5 +101,7 @@ playButton.addEventListener("click", () => {
   }
 
   // TODO also check if answer boxes even contain searchable text (or are just images)
-  playGameBox.insertAdjacentElement("beforeend", customInput);
+  document
+    .getElementById("questionbox")
+    .insertAdjacentElement("afterend", controlBox);
 });
