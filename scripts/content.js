@@ -108,4 +108,6 @@ playButton.addEventListener("click", () => {
   document
     .getElementById("questionbox")
     .insertAdjacentElement("afterend", controlBox);
+
+  customInput.focus();
 });
