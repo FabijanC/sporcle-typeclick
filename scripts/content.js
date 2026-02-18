@@ -40,13 +40,14 @@ function insertControlBox() {
   controlBox.id = "controlbox";
   controlBox.style = "display: flex; justify-content: center; margin: 5px;";
 
-  const prevButton = document.getElementById("pickprev");
-  const nextButton = document.getElementById("picknext");
-
   const customInput = document.createElement("input");
   customInput.id = "typeclick-input";
   customInput.style = "margin: 0 5px; font-size: 2rem";
 
+  const prevButton = document.getElementById("pickprev");
+  const nextButton = document.getElementById("picknext");
+
+  // Inserting control box based on the existence of prev and next buttons.
   if (prevButton) {
     controlBox.insertAdjacentElement("beforeend", prevButton);
     controlBox.insertAdjacentElement("beforeend", customInput);
