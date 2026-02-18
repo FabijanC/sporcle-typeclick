@@ -7,7 +7,7 @@ function normalizeText(text) {
 }
 
 /**
- * Basically green color is correct, yellow is selected. The latter ispossible in clickable quizzes
+ * Basically green color is correct, yellow is selected. The latter is possible in clickable quizzes
  * with two-side matching.
  */
 function isAnswerMarkedAsCorrectOrSelected(el) {
